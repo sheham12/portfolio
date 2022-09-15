@@ -4,18 +4,15 @@ The first/second lab
 <ul>
 <li>Consists of a program that can execute some operations on huge integers.</li>
 <li>In the program, a class named "HugeInteger" exists. Within the class, there are constructors/deconstructors and several methods including "add", "subtract", "multiple", "compareTo", and more.</li>
-<br/>
 </ul>
 
 Third lab
 <ul>
 <li>Consists of a program that can execute some operations on polynomial functions.</li>
 <li>In the program, a class named "Poly" exists. Within the class, there are constructors/deconstructors and several methods including "addMono", "addPoly", "multipleMono", "multiplePoly", and more.
-<br/>
 </ul>
 
 The fourth lab
-<br/>
 The fifth lab
 
 
