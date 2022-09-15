@@ -1,0 +1,11 @@
+﻿  Lab3.cpp
+  Poly.cpp
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\Poly.cpp(22,2): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  TestPoly.cpp
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\TestPoly.cpp(1482,31): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\TestPoly.cpp(1614,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\TestPoly.cpp(1761,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\TestPoly.cpp(1883,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\magda\Downloads\winter2022_projects\2s_lab3\TestPoly.cpp(2006,34): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
+  lab3.vcxproj -> C:\Users\magda\Downloads\winter2022_projects\2s_lab3\lab3\x64\Debug\lab3.exe

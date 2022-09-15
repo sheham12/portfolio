@@ -1,0 +1,225 @@
+﻿#include "HashTableQuad.h"
+#include <iostream>
+#include <math.h>
+
+using namespace std;
+
+HashTableQuad::HashTableQuad(int maxNum, double load)
+{
+    //find size by dividing maxNum by load (round up)
+    
+    /*
+    double with_dec = maxNum / load;
+    if (with_dec > int(with_dec))
+        with_dec++;
+    int sizeR = int(with_dec);*/
+
+    int sizeR = ceil(maxNum / load);
+
+    //find smallest prime number that is equal to or larger than the size found above
+    for (int i = sizeR; i < INT_MAX; i++)
+    {
+        if (isPrime(i))
+        {
+            size = i;
+            break;
+        }
+    }
+
+    //initialize private fields 
+    double dec =size*load;
+    if (dec > int(dec))
+        dec++;
+    keyMax = int(dec);
+    
+    //keyMax = int(size * load);
+    key = 0;
+    max_load = load;
+    table.resize(size);
+}
+
+
+void HashTableQuad::insert(int n)
+{
+    int count = 0;
+    //check if integer is already in hash table
+    if (!isIn(n)) {
+        int i = n % size;
+        if (table[i] == 0) {
+            table[i] = n;
+            key++;
+        }
+        //quadratic probing
+        else {
+            for (int k = 0; k < size; k++)
+            {
+                int index = (i + k * k) % size;
+                if (table[index] == 0) {
+                    table[index] = n;
+                    key++;
+                    break;
+                }
+            }
+        }
+    }
+    //rehash if load of table is greater than the max load
+    if ((double(key) / size) > max_load) {
+        rehash();
+    }
+}
+//time complexity is n^2
+void HashTableQuad::rehash()
+{
+    //double size of table
+    int new_size = size * 2;
+    while (!isPrime(new_size))
+    {
+        new_size++;
+    }
+
+    HashTableQuad new_table=  HashTableQuad(new_size,1);
+
+    for (int i = 0;i < size;i++)
+    {
+        if (table[i] != 0) {
+            new_table.insert(table[i]);
+        }
+    }
+
+    table = new_table.table;
+    size = new_table.size;
+
+}
+
+bool HashTableQuad::isIn(int n)
+{
+    // TODO, change following code after completing this function
+    int i = n % size;
+    int count = 1;
+    //traverse through table
+    while (table[i] != 0) {
+        if (table[i] == n)
+            return true;
+        
+        //quadratic probing
+        else {
+            i = (n % size) + (count * count);
+            while (i >= size)
+                i -= size;
+            count++;
+            
+            //condition to avoid infinite while loop
+            if (i == (n % size)) {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+void HashTableQuad::printKeys()
+{
+    cout << "[";
+
+    for (int i = 0;i < (table.size() - 1);i++)
+    {
+        if (table[i] != 0)
+            cout << table[i] << ", ";
+    }
+    cout << table[size - 1] << "]";
+}
+
+void HashTableQuad::printKeysAndIndexes()
+{
+    // TODO
+    for (int i = 0;i < table.size();i++)
+    {
+        if (table[i] != 0)
+            cout << "[" << i << "]" << ": " << table[i] << endl;
+    }
+}
+
+int HashTableQuad::getNumKeys() {
+	// TODO, change following code after completing this function
+    return key;
+}
+
+int HashTableQuad::getTableSize() {
+	// TODO, change following code after completing this function
+    return size;
+}
+
+double HashTableQuad::getMaxLoadFactor() {
+	// TODO, change following code after completing this function
+    return max_load;
+}
+
+std::vector<double> HashTableQuad::simProbeSuccess()
+{
+    // TODO, change following code after completing this function
+    vector<double> result(9);
+    double lambda;
+
+    //for each load factor, allocate a hash table and insert 100,000 randomly generated numbers (no duplicates)
+    for (int i = 1;i <= 9;i++)
+    {
+        lambda = 0.1 * i;
+        int tot_probe = 0;
+        double avg_probe = 0;
+        int num_probe = 0;
+        int rand_num = 0;
+
+        for (int k = 0;k < 100;k++)
+        {
+            HashTableQuad new_table = HashTableQuad(10000, lambda);
+            for (int j = 0;j < 10000;j++)
+            {
+                rand_num = rand();
+                while (new_table.isIn(rand_num))
+                    rand_num = rand();
+                num_probe = new_table.insertCount(rand_num);
+                tot_probe += num_probe;
+            }
+        }
+        avg_probe = tot_probe / 1000000.0;
+        result[i - 1] = avg_probe;
+    }
+    return result;
+
+}
+
+int HashTableQuad::insertCount(int n)
+{
+    int count = 0;
+    int num_probe = 0;
+    //check if integer is already in hash table
+    if (isIn(n))
+        return -1;
+    else{
+        int i = n % size;
+        if (table[i] == 0) {
+            num_probe++;
+            table[i] = n;
+            key++;
+        }
+        //quadratic probing
+        else {
+            for (int k = 0; k < size; k++)
+            {
+                int index = (i + k * k) % size;
+                num_probe++;
+                if (table[index] == 0) {
+                    table[index] = n;
+                    key++;
+                    break;
+                }
+            }
+        }
+    }
+    /*
+    //rehash if load of table is greater than the max load
+    if ((double(key) / size) > max_load) {
+        rehash();
+    }*/
+    return num_probe;
+}
+

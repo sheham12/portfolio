@@ -1,0 +1,251 @@
+﻿#include "HashTableLin.h"
+#include <iostream>
+using namespace std;
+
+HashTableLin::HashTableLin(int maxNum, double load)
+{
+    //find size by dividing maxNum by load (round up)
+    double with_dec = maxNum / load;
+    if (with_dec > int(with_dec))
+        with_dec++;
+    int sizeR = int (with_dec) ;
+
+    //find smallest prime number that is equal to or larger than the size found above
+    for (int i = sizeR; i < INT_MAX ; i++)
+    {
+        if (isPrime(i))
+        {
+            size = i;
+            break;
+        }
+    }
+
+    //initialize private fields 
+    keyMax = int(size * load);
+    key = 0;
+    max_load = load;
+    table.resize(size);
+}
+
+void HashTableLin::insert(int n)
+{
+    //TODO
+    if (!isIn(n)) {
+        key++;
+        if (key > keyMax) {
+            rehash();
+        }
+        int i = n % size;
+        if (table[i] == 0) {
+            table[i] = n;
+        }
+        //linear probing
+        else {
+            while (table[i] != 0) {
+                i++;
+                if (i > (size - 1)) {
+                    i = 0;
+                }
+            }
+            table[i] = n;
+        }
+    }
+}
+
+void HashTableLin::rehash()
+{/*
+    // TODO
+    size = size * 2;
+    std::vector<int> copyTable=table;
+    for (int i = size;i < INT_MAX;i++)
+    {
+        if (isPrime(i)){
+            size = i;
+            break;
+        }
+    }
+
+    keyMax = int(size * max_load);
+    table.resize(size);
+    //max_load = HashTableLin.max_load;
+
+    key = 1;
+
+    for (int i = 0;i < size;i++)
+        table[i] = 0;
+
+    for (int i = 0;i < copyTable.size();i++)
+    {
+        if (copyTable[i] != NULL) {
+            insert(copyTable[i]);
+        }
+    }*/
+    //double size of table
+    int new_size = size * 2;
+    while (!isPrime(new_size))
+    {
+        new_size++;
+    }
+
+    HashTableLin new_table = HashTableLin(new_size, 1);
+
+    for (int i = 0;i < size;i++)
+    {
+        if (table[i] != 0) {
+            new_table.insert(table[i]);
+        }
+    }
+
+    table = new_table.table;
+    size = new_table.size;
+}
+
+bool HashTableLin::isIn(int n)
+{
+    // TODO, change following code after completing this function
+    int i = n % size;
+    //traverse through table
+    //while (table[i] != 0) {
+    while (table[i] != 0 && (!table.empty())) {
+        if (table[i] == n)
+            return true;
+        //linear probing
+        else {
+            i++;
+            if (i > (size - 1)) {
+                i = 0;
+            }
+            if (i == (n % size)) {
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+void HashTableLin::printKeys()
+{
+    cout << "[";
+
+    for (int i = 0;i < (table.size()-1);i++)
+    {
+        if (table[i] != 0)
+            cout << table[i]<<", ";
+    }
+    cout << table[size-1] << "]";
+
+}
+
+void HashTableLin::printKeysAndIndexes()
+{
+    // TODO
+    for (int i = 0;i < table.size();i++)
+    {
+        if (table[i]!=0)
+            cout << "[" << i << "]" << ": " << table[i] <<endl;
+    }
+}
+
+int HashTableLin::getNumKeys() {
+	// TODO, change following code after completing this function
+    return key;
+}
+
+int HashTableLin::getTableSize() {
+	// TODO, change following code after completing this function
+    return size;
+}
+
+double HashTableLin::getMaxLoadFactor() {
+	// TODO, change following code after completing this function
+    return max_load;
+}
+/*
+std::vector<double> HashTableLin::simProbeSuccess()
+{
+    // TODO, change following code after completing this function
+    vector<double> result(9);
+    double lambda;
+    for (int i = 1;i <= 9;i++)
+    {
+        lambda = 0.1 * i;
+        result[i - 1] = (0.5) * (1.0 + (1.0 / (1.0 - lambda)));
+    }
+    return result;
+}*/
+
+
+std::vector<double> HashTableLin::simProbeSuccess()
+{
+    // TODO, change following code after completing this function
+    vector<double> result(9);
+    double lambda;
+
+    //for each load factor, allocate a hash table and insert 100,000 randomly generated numbers (no duplicates)
+    for (int i = 1;i <= 9;i++)
+    {
+        lambda = 0.1 * i;
+        int tot_probe = 0;
+        double avg_probe = 0;
+        int num_probe = 0;
+        int rand_num = 0;
+
+        for (int k = 0;k < 100;k++)
+        {
+            HashTableLin new_table = HashTableLin(10000, lambda);
+            for (int j = 0;j < 10000;j++)
+            {
+                rand_num = rand();
+                while (new_table.isIn(rand_num))
+                    rand_num = rand();
+                num_probe = new_table.insertCount(rand_num);
+                tot_probe += num_probe;
+            }
+        }
+        avg_probe = tot_probe/1000000.0;
+        result[i - 1] = avg_probe;
+    }
+    return result;
+}
+
+// for bonus
+std::vector<double> HashTableLin::simProbeUnsuccess()
+{
+    // TODO, change following code after completing this function
+    vector<double> result(9);
+    return result;
+}
+
+
+int HashTableLin::insertCount(int n)
+{
+    //TODO
+    int num_probe=0;
+
+    if (isIn(n))
+        return -1;
+    else {
+        key++;
+        /*
+        if (key > keyMax) {
+            rehash();
+        }*/
+        int i = n % size;
+        if (table[i] == 0) {
+            num_probe++;
+            table[i] = n;
+        }
+        //linear probing
+        else {
+            while (table[i] != 0) {
+                i++;
+                num_probe++;
+                if (i > (size - 1)) {
+                    i = 0;
+                }
+            }
+            table[i] = n;
+        }
+    }
+    return num_probe;
+}
